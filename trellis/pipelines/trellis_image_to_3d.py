@@ -252,6 +252,25 @@ class TrellisImageTo3DPipeline(Pipeline):
         return slat
 
     @torch.no_grad()
+    def run_from_noise(
+            self,
+            num_samples: int = 1,
+            seed: int = 42,
+            sparse_structure_sampler_params: dict = {},
+            slat_sampler_params: dict = {},
+            formats: list = ['mesh', 'gaussian', 'radiance_field'],
+    ) -> dict:
+        torch.manual_seed(seed)
+        # Create dummy conditioning (zeros) if needed
+        cond = {'cond': None, 'neg_cond': None}
+        # Sample sparse structure from noise
+        coords = self.sample_sparse_structure(cond, num_samples, sparse_structure_sampler_params)
+        # Sample structured latent from noise
+        slat = self.sample_slat(cond, coords, slat_sampler_params)
+        # Decode to desired formats
+        return self.decode_slat(slat, formats)
+
+    @torch.no_grad()
     def run(
         self,
         image: Image.Image,
