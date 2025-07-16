@@ -17,7 +17,7 @@ pipeline.cuda()
 image = Image.open("assets/example_image/T.png")
 
 # Run the pipeline
-outputs = pipeline.run(
+outputs = pipeline.run_from_noise(
     image,
     seed=1,
     # Optional parameters
